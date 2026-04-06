@@ -5,7 +5,9 @@ WORKDIR /app
 # Install server and inference dependencies in one layer
 COPY server/requirements.txt ./server/requirements.txt
 COPY requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir -r server/requirements.txt -r requirements.txt
+RUN pip install --no-cache-dir -r server/requirements.txt -r requirements.txt \
+    && (pip install --no-cache-dir openenv-core || pip install --no-cache-dir openenv) \
+    && python -c "import openenv; print('openenv import OK')"
 
 # Copy the entire project into the container
 COPY . /app/

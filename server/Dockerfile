@@ -4,7 +4,9 @@ WORKDIR /app
 
 # Install server dependencies only (for a leaner server-only build)
 COPY server/requirements.txt ./server/requirements.txt
-RUN pip install --no-cache-dir -r server/requirements.txt
+RUN pip install --no-cache-dir -r server/requirements.txt \
+    && (pip install --no-cache-dir openenv-core || pip install --no-cache-dir openenv) \
+    && python -c "import openenv; print('openenv import OK')"
 
 # Copy only the server and project source files
 COPY models.py ./models.py
