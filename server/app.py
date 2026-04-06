@@ -18,7 +18,10 @@ for _path in [_ROOT, _HERE]:
     if _path not in sys.path:
         sys.path.insert(0, _path)
 
-from openenv.core.env_server.http_server import create_fastapi_app
+try:
+    from openenv.core.env_server.http_server import create_fastapi_app
+except ImportError:
+    from openenv_core.core.env_server.http_server import create_fastapi_app
 from fastapi.responses import HTMLResponse
 from models import EmailTriageAction, EmailTriageObservation
 from email_triage_environment import EmailTriageEnvironment

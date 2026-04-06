@@ -25,11 +25,14 @@ for _path in [_HERE, _ROOT]:
 try:
     from openenv.core.env_server import Environment
 except ImportError:
-    # Minimal stub — used only during initial development before openenv-core install
-    class Environment:
-        """No-op base class stub."""
-        def __init__(self):
-            pass
+    try:
+        from openenv_core.core.env_server import Environment
+    except ImportError:
+        # Minimal stub — used only during initial development before openenv-core install
+        class Environment:
+            """No-op base class stub."""
+            def __init__(self):
+                pass
 
 from models import (
     EmailTriageAction,

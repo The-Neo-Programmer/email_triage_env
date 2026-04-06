@@ -5,13 +5,17 @@ try:
     from openenv.core.env_client import EnvClient
     from openenv.core.client_types import StepResult
 except ImportError:
-    class EnvClient:
-        def __class_getitem__(cls, _): return cls
-    class StepResult:
-        def __init__(self, observation, reward, done):
-            self.observation = observation
-            self.reward = reward
-            self.done = done
+    try:
+        from openenv_core.core.env_client import EnvClient
+        from openenv_core.core.client_types import StepResult
+    except ImportError:
+        class EnvClient:
+            def __class_getitem__(cls, _): return cls
+        class StepResult:
+            def __init__(self, observation, reward, done):
+                self.observation = observation
+                self.reward = reward
+                self.done = done
 
 from models import EmailTriageAction, EmailTriageObservation, EmailTriageState
 
@@ -23,7 +27,7 @@ class EmailTriageEnv(EnvClient[EmailTriageAction, EmailTriageObservation, EmailT
     """
 
     def _step_payload(self, action: EmailTriageAction) -> dict:
-        return {"content": action.content}
+        return {"action": {"content": action.content}}
 
     def _parse_result(self, payload: dict) -> StepResult[EmailTriageObservation]:
         obs_payload = payload.get("observation", {})

@@ -34,7 +34,9 @@ jobs:
           pip install "huggingface_hub[cli]>=0.30.0"
 
       - name: OpenEnv validation
-        run: python -m openenv.cli validate
+        run: |
+          python -c "import importlib.util as u; print('openenv:', bool(u.find_spec('openenv')), 'openenv_core:', bool(u.find_spec('openenv_core')))"
+          python -m openenv.cli validate || python -m openenv_core.cli validate
 
       - name: Start API server
         run: |

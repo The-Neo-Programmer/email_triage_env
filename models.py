@@ -6,20 +6,26 @@ try:
     from openenv.core.env_server.types import Action, Observation, State
 except ImportError:
     try:
-        from openenv.core.env_server import Action, Observation, State
+        from openenv_core.core.env_server.types import Action, Observation, State
     except ImportError:
-        # Minimal stubs for standalone / pre-install development
-        class Action(BaseModel):
-            pass
+        try:
+            from openenv.core.env_server import Action, Observation, State
+        except ImportError:
+            try:
+                from openenv_core.core.env_server import Action, Observation, State
+            except ImportError:
+                # Minimal stubs for standalone / pre-install development
+                class Action(BaseModel):
+                    pass
 
-        class Observation(BaseModel):
-            done: bool = False
-            reward: float = 0.0
-            metadata: Dict = Field(default_factory=dict)
+                class Observation(BaseModel):
+                    done: bool = False
+                    reward: float = 0.0
+                    metadata: Dict = Field(default_factory=dict)
 
-        class State(BaseModel):
-            episode_id: str = Field(default_factory=lambda: str(uuid4()))
-            step_count: int = 0
+                class State(BaseModel):
+                    episode_id: str = Field(default_factory=lambda: str(uuid4()))
+                    step_count: int = 0
 
 
 # ---------------------------------------------------------------------------

@@ -6,7 +6,7 @@ WORKDIR /app
 COPY server/requirements.txt ./server/requirements.txt
 RUN pip install --no-cache-dir -r server/requirements.txt \
     && (pip install --no-cache-dir openenv-core || pip install --no-cache-dir openenv) \
-    && python -c "import openenv; print('openenv import OK')"
+    && python -c "import importlib.util as u; assert (u.find_spec('openenv') or u.find_spec('openenv_core')), 'OpenEnv module missing'; print('openenv namespace import OK')"
 
 # Copy only the server and project source files
 COPY models.py ./models.py
