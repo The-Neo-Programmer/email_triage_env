@@ -6,8 +6,7 @@ WORKDIR /app
 COPY server/requirements.txt ./server/requirements.txt
 COPY requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r server/requirements.txt -r requirements.txt \
-    && pip install --no-cache-dir openenv-core openenv \
-    && python -c "import importlib.util as u; assert u.find_spec('openenv'), 'openenv namespace missing'; print('openenv import OK')"
+    && python -c "import openenv.core; print('openenv.core OK')"
 
 # Copy the entire project into the container
 COPY . /app/

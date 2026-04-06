@@ -5,17 +5,13 @@ try:
     from openenv.core.env_client import EnvClient
     from openenv.core.client_types import StepResult
 except ImportError:
-    try:
-        from openenv_core.env_client import EnvClient
-        from openenv_core.client_types import StepResult
-    except ImportError:
-        class EnvClient:
-            def __class_getitem__(cls, _): return cls
-        class StepResult:
-            def __init__(self, observation, reward, done):
-                self.observation = observation
-                self.reward = reward
-                self.done = done
+    class EnvClient:
+        def __class_getitem__(cls, _): return cls
+    class StepResult:
+        def __init__(self, observation, reward, done):
+            self.observation = observation
+            self.reward = reward
+            self.done = done
 
 from models import EmailTriageAction, EmailTriageObservation, EmailTriageState
 
