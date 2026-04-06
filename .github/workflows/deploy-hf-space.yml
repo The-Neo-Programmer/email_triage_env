@@ -33,6 +33,11 @@ jobs:
           pip install -r server/requirements.txt -r requirements.txt
           pip install openenv
           pip install "huggingface_hub[cli]>=0.30.0"
+          python -c "import sys; print('python',sys.version)"
+          python -c "import importlib.util as u; print('spec openenv',bool(u.find_spec('openenv')),'spec openenv_core',bool(u.find_spec('openenv_core')))"
+          python -c "import pkgutil; import site; print('site',site.getsitepackages());"
+          python -c "import openenv; import openenv.core; print('openenv',openenv.__file__); print('openenv.core',openenv.core.__file__)"
+          pip show openenv openenv-core || true
 
       - name: OpenEnv validation
         run: |
@@ -47,9 +52,25 @@ jobs:
 
       - name: Start API server
         run: |
-          python -m server.app &
+          set -e
+          python -m server.app > server.out 2>&1 &
           echo $! > server.pid
-          sleep 8
+          sleep 2
+          if ! kill -0 "$(cat server.pid)" 2>/dev/null; then
+            echo "Server process exited early. Output:"
+            cat server.out || true
+            exit 1
+          fi
+          for i in 1 2 3 4 5 6 7 8; do
+            if python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7860/health',timeout=2).read()"; then
+              echo "Server is healthy"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Server did not become healthy. Output:"
+          cat server.out || true
+          exit 1
 
       - name: Runtime smoke checks
         run: python scripts/smoke_test.py http://127.0.0.1:7860
@@ -59,6 +80,10 @@ jobs:
         run: |
           if [ -f server.pid ]; then
             kill "$(cat server.pid)" || true
+          fi
+          if [ -f server.out ]; then
+            echo "---- server.out (tail) ----"
+            tail -200 server.out || true
           fi
 
       - name: Guard required deploy secrets
