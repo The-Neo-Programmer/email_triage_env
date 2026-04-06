@@ -22,4 +22,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s \
 
 ENV ENABLE_WEB_INTERFACE=false
 
-CMD ["uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["python", "-m", "server.app"]

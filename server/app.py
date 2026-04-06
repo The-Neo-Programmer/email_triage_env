@@ -9,6 +9,7 @@ a custom premium HTML dashboard.
 import os
 import sys
 import logging
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 # Ensure the project root (/app) is in sys.path so all top-level modules
 # are importable regardless of how uvicorn imports this file.
@@ -18,8 +19,11 @@ for _path in [_ROOT, _HERE]:
     if _path not in sys.path:
         sys.path.insert(0, _path)
 
+# Keep custom UI ownership deterministic for Hugging Face Spaces.
+# Set before importing OpenEnv server helpers in case they read env at import-time.
+os.environ["ENABLE_WEB_INTERFACE"] = "false"
+
 from openenv.core.env_server.http_server import create_fastapi_app
-from fastapi.responses import HTMLResponse
 from models import EmailTriageAction, EmailTriageObservation
 from email_triage_environment import EmailTriageEnvironment
 
@@ -27,10 +31,6 @@ from email_triage_environment import EmailTriageEnvironment
 custom_ui_path = os.path.join(_HERE, "custom_ui.html")
 with open(custom_ui_path, "r", encoding="utf-8") as f:
     CUSTOM_UI_HTML = f.read()
-
-# Keep custom UI ownership deterministic at "/" for Hugging Face Spaces.
-# The OpenEnv web interface can conflict with custom root routes across versions.
-os.environ.setdefault("ENABLE_WEB_INTERFACE", "false")
 
 # Create OpenEnv API app
 app = create_fastapi_app(
@@ -51,6 +51,10 @@ async def serve_custom_ui():
 @app.get("/ui", response_class=HTMLResponse, include_in_schema=False)
 async def serve_custom_ui_alias():
     return CUSTOM_UI_HTML
+
+@app.get("/app", include_in_schema=False)
+async def serve_ui_redirect():
+    return RedirectResponse(url="/", status_code=307)
 
 def main(host: str = "0.0.0.0", port: int = 7860):
     import uvicorn
