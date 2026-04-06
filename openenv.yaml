@@ -1,0 +1,27 @@
+name: email-triage-env
+version: "1.0.0"
+description: "Real-world RL environment for professional email triage: classification, action extraction, and response drafting. An agent benchmark for enterprise inbox management."
+tags:
+  - openenv
+  - email
+  - triage
+  - nlp
+  - real-world
+server:
+  module: server.app
+  app: app
+tasks:
+  - name: classify
+    difficulty: easy
+    description: "Classify the email urgency (low/medium/high/critical) and category (incident/request/collaboration/info/spam)"
+    max_steps: 5
+  - name: extract
+    difficulty: medium
+    description: "Extract all concrete action items the recipient must perform as a JSON list"
+    max_steps: 5
+  - name: respond
+    difficulty: hard
+    description: "Draft a professional, context-aware email response (30-180 words) with greeting and sign-off"
+    max_steps: 5
+action_space: EmailTriageAction
+observation_space: EmailTriageObservation
