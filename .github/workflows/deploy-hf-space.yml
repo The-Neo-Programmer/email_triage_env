@@ -1,0 +1,94 @@
+name: Deploy Hugging Face Space
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  validate-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      PYTHONUNBUFFERED: "1"
+      HF_SPACE_REPO: ${{ secrets.HF_SPACE_REPO }}
+      HF_USERNAME: ${{ secrets.HF_USERNAME }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      HF_SPACE_REPO_ID: ${{ secrets.HF_USERNAME }}/${{ secrets.HF_SPACE_REPO }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r server/requirements.txt -r requirements.txt
+          pip install "huggingface_hub[cli]>=0.30.0"
+          python -c "import sys; print('python',sys.version)"
+          python -c "import importlib.util as u; print('spec openenv',bool(u.find_spec('openenv')),'spec openenv_core',bool(u.find_spec('openenv_core')))"
+          python -c "import pkgutil; import site; print('site',site.getsitepackages());"
+          python -c "import openenv.core; print('openenv.core OK')"
+          pip show openenv-core || true
+
+      - name: OpenEnv validation
+        run: |
+          python -c "import importlib.util as u; print('openenv:', bool(u.find_spec('openenv')), 'openenv_core:', bool(u.find_spec('openenv_core')))"
+          python -m openenv.cli validate
+
+      - name: Start API server
+        run: |
+          set -e
+          python -m server.app > server.out 2>&1 &
+          echo $! > server.pid
+          sleep 2
+          if ! kill -0 "$(cat server.pid)" 2>/dev/null; then
+            echo "Server process exited early. Output:"
+            cat server.out || true
+            exit 1
+          fi
+          for i in 1 2 3 4 5 6 7 8; do
+            if python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7860/health',timeout=2).read()"; then
+              echo "Server is healthy"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Server did not become healthy. Output:"
+          cat server.out || true
+          exit 1
+
+      - name: Runtime smoke checks
+        run: python scripts/smoke_test.py http://127.0.0.1:7860
+
+      - name: Stop API server
+        if: always()
+        run: |
+          if [ -f server.pid ]; then
+            kill "$(cat server.pid)" || true
+          fi
+          if [ -f server.out ]; then
+            echo "---- server.out (tail) ----"
+            tail -200 server.out || true
+          fi
+
+      - name: Guard required deploy secrets
+        run: |
+          test -n "$HF_TOKEN"
+          test -n "$HF_SPACE_REPO"
+          test -n "$HF_USERNAME"
+
+      - name: Push to Hugging Face Space
+        run: |
+          hf upload "$HF_SPACE_REPO_ID" . . \
+            --repo-type space \
+            --token "$HF_TOKEN" \
+            --exclude ".git/*" \
+            --exclude ".github/*"
