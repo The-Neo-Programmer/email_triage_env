@@ -6,13 +6,13 @@ try:
     from openenv.core.env_server.types import Action, Observation, State
 except ImportError:
     try:
-        from openenv_core.core.env_server.types import Action, Observation, State
+        from openenv_core.env_server.types import Action, Observation, State
     except ImportError:
         try:
             from openenv.core.env_server import Action, Observation, State
         except ImportError:
             try:
-                from openenv_core.core.env_server import Action, Observation, State
+                from openenv_core.env_server import Action, Observation, State
             except ImportError:
                 # Minimal stubs for standalone / pre-install development
                 class Action(BaseModel):

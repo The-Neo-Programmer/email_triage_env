@@ -6,8 +6,8 @@ try:
     from openenv.core.client_types import StepResult
 except ImportError:
     try:
-        from openenv_core.core.env_client import EnvClient
-        from openenv_core.core.client_types import StepResult
+        from openenv_core.env_client import EnvClient
+        from openenv_core.client_types import StepResult
     except ImportError:
         class EnvClient:
             def __class_getitem__(cls, _): return cls

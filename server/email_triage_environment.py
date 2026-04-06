@@ -26,7 +26,7 @@ try:
     from openenv.core.env_server import Environment
 except ImportError:
     try:
-        from openenv_core.core.env_server import Environment
+        from openenv_core.env_server import Environment
     except ImportError:
         # Minimal stub — used only during initial development before openenv-core install
         class Environment:
