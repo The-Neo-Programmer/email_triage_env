@@ -54,16 +54,32 @@ jobs:
             cat server.out || true
             exit 1
           fi
-          for i in 1 2 3 4 5 6 7 8; do
-            if python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7860/health',timeout=2).read()"; then
-              echo "Server is healthy"
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "Server did not become healthy. Output:"
-          cat server.out || true
-          exit 1
+          python - <<'PY'
+          import time
+          import urllib.request
+          import urllib.error
+          import sys
+          
+          url = "http://127.0.0.1:7860/health"
+          deadline_s = 25
+          start = time.time()
+          
+          while True:
+              try:
+                  with urllib.request.urlopen(url, timeout=2) as resp:
+                      if 200 <= resp.status < 300:
+                          print("Server is healthy")
+                          sys.exit(0)
+              except Exception:
+                  # Avoid noisy stack traces on transient startup races.
+                  pass
+              
+              if time.time() - start > deadline_s:
+                  print("Server did not become healthy in time")
+                  sys.exit(1)
+              
+              time.sleep(1)
+          PY
 
       - name: Runtime smoke checks
         run: python scripts/smoke_test.py http://127.0.0.1:7860
@@ -87,8 +103,18 @@ jobs:
 
       - name: Push to Hugging Face Space
         run: |
-          hf upload "$HF_SPACE_REPO_ID" . . \
-            --repo-type space \
-            --token "$HF_TOKEN" \
-            --exclude ".git/*" \
-            --exclude ".github/*"
+          set -e
+          # HF occasionally returns transient 503s; retry with backoff.
+          for attempt in 1 2 3 4 5; do
+            echo "hf upload attempt ${attempt}/5"
+            if hf upload "$HF_SPACE_REPO_ID" . . \
+              --repo-type space \
+              --token "$HF_TOKEN" \
+              --exclude ".git/*" \
+              --exclude ".github/*"; then
+              exit 0
+            fi
+            sleep $((attempt * 10))
+          done
+          echo "hf upload failed after retries. Re-run with HF_DEBUG=1 for more details."
+          exit 1
