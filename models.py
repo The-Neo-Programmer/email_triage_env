@@ -41,6 +41,10 @@ class EmailTriageObservation(Observation):
     """
     Observation returned by the environment after reset() or step().
     """
+    # OpenEnv's Observation may allow metadata=None; the server code writes into
+    # metadata on errors, so ensure it's always a dict at runtime.
+    metadata: Dict = Field(default_factory=dict)
+
     # --- Email payload ---
     email_id: str = ""
     email_subject: str = ""

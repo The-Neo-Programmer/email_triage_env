@@ -132,6 +132,34 @@ class EmailTriageEnvironment(Environment):
                 reward=0.0,
             )
 
+        # Defensive: OpenEnv HTTP servers can be configured statelessly (new env instance
+        # per request). If that happens, reconstruct episode context from action.metadata
+        # so the web UI (and simple HTTP clients) still work without cookies/session IDs.
+        if not self._current_email:
+            meta = getattr(action, "metadata", None) or {}
+            meta_email_id = meta.get("email_id")
+            meta_task = meta.get("task")
+            meta_episode_id = meta.get("episode_id")
+
+            if meta_task in self.TASKS:
+                self._state.task = meta_task
+
+            if meta_episode_id and not getattr(self._state, "episode_id", None):
+                self._state.episode_id = meta_episode_id
+
+            if meta_email_id:
+                found = next((e for e in self.emails if e.get("id") == meta_email_id), None)
+                if found:
+                    self._current_email = found
+                    self._state.email_id = found.get("id", "")
+
+        if not self._current_email:
+            return self._make_observation(
+                "No active email loaded for this session. Please call reset() and try again.",
+                done=False,
+                reward=0.0,
+            )
+
         self._state.step_count += 1
         self._state.attempts += 1
 
@@ -190,8 +218,9 @@ class EmailTriageEnvironment(Environment):
             error=error,
         )
 
+    @property
     def state(self) -> EmailTriageState:
-        """Return the current episode state (OpenEnv spec: callable method)."""
+        """Return the current episode state (OpenEnv server expects an attribute)."""
         return self._state
 
     # ------------------------------------------------------------------
@@ -220,6 +249,4 @@ class EmailTriageEnvironment(Environment):
             done=done,
             reward=reward,
         )
-        if error:
-            obs.metadata["error"] = error
         return obs
