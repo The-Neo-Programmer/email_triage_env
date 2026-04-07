@@ -140,22 +140,35 @@ The environment uses a **delta reward** design:
 
 ```
 email_triage_env/
-├── Dockerfile                        Root Dockerfile for HF Spaces deployment
-├── openenv.yaml                      OpenEnv spec metadata and task registry
-├── pyproject.toml                    Package configuration
-├── requirements.txt                  Root-level Python dependencies
-├── inference.py                      Baseline inference script (mandatory)
-├── models.py                         Typed Pydantic models (Action, Observation, State)
-├── client.py                         HTTP environment client wrapper
+├── Dockerfile                              Root Dockerfile for HF Spaces deployment
+├── README.md                               Project README (this file; includes HF Space front matter)
+├── openenv.yaml                            OpenEnv spec metadata and task registry
+├── pyproject.toml                          Package configuration
+├── requirements.txt                        Root-level Python dependencies
+├── uv.lock                                 Dependency lock (uv)
+├── .env.example                            Example env vars for inference/deploy
+├── .gitignore                              Git ignore rules
+├── __init__.py                             Marks environment root as a package
+├── inference.py                            Baseline inference script (mandatory)
+├── models.py                               Typed Pydantic models (Action, Observation, State)
+├── client.py                               HTTP environment client wrapper
+├── restore.py                              Utilities (project maintenance)
+├── find_encoding_errors.py                 Utilities (project maintenance)
+├── scripts/
+│   └── smoke_test.py                       Runtime smoke checks for local/CI
+├── .github/
+│   └── workflows/
+│       └── deploy-hf-space.yml             GitHub Action: validate, smoke-test, deploy
 ├── data/
-│   └── emails.json                   10 synthetic enterprise emails with ground truth
+│   └── emails.json                         10 synthetic enterprise emails with ground truth
 └── server/
     ├── __init__.py
-    ├── app.py                        FastAPI application entry point with web UI
-    ├── email_triage_environment.py   Core environment lifecycle logic
-    ├── graders.py                    Deterministic evaluation logic for all 3 tasks
-    ├── requirements.txt              Server-specific dependencies
-    └── Dockerfile                    Server-only Dockerfile (for standalone builds)
+    ├── app.py                              FastAPI application entry point with web UI
+    ├── custom_ui.html                      Custom web UI dashboard
+    ├── email_triage_environment.py         Core environment lifecycle logic
+    ├── graders.py                          Deterministic evaluation logic for all 3 tasks
+    ├── requirements.txt                    Server-specific dependencies
+    └── Dockerfile                          Server-only Dockerfile (for standalone builds)
 ```
 
 ---
