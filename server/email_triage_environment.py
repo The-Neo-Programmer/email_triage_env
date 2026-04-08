@@ -197,6 +197,14 @@ class EmailTriageEnvironment(Environment):
             score = 0.0
             error = str(exc)
 
+        # Validator requirement: task scores must be strictly within (0, 1).
+        # Clamp *all* paths (including error cases) into the open interval.
+        score = min(max(float(score or 0.0), 0.0), 1.0)
+        if score <= 0.0:
+            score = 1e-6
+        elif score >= 1.0:
+            score = 1.0 - 1e-6
+
         # Delta reward: reward only improvements beyond the current episode best
         reward = 0.0
         if score > self._state.best_score:

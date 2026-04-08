@@ -2,6 +2,22 @@ import json
 import re
 from typing import Dict, List, Any
 
+# Hackathon validator requirement: task scores must be strictly within (0, 1).
+# We clamp all grader outputs into the open interval using a tiny epsilon.
+_EPS = 1e-6
+
+
+def _clamp_open01(x: float) -> float:
+    try:
+        x = float(x)
+    except Exception:
+        x = 0.0
+    if x <= 0.0:
+        return _EPS
+    if x >= 1.0:
+        return 1.0 - _EPS
+    return x
+
 class TriageGraders:
     @staticmethod
     def grade_classify(predicted: Dict[str, str], ground_truth: Dict[str, Any]) -> float:
@@ -28,7 +44,7 @@ class TriageGraders:
         if pred_category == gt_category:
             score += 0.5
             
-        return min(max(score, 0.0), 1.0)
+        return _clamp_open01(min(max(score, 0.0), 1.0))
         
     @staticmethod
     def grade_extract(predicted: Dict[str, List[str]], ground_truth: Dict[str, Any]) -> float:
@@ -38,18 +54,18 @@ class TriageGraders:
         """
         pred_actions = predicted.get("action_items", [])
         if not isinstance(pred_actions, list):
-            return 0.0
+            return _clamp_open01(0.0)
             
         gt_actions = ground_truth.get("action_items", [])
         
         if not gt_actions and not pred_actions:
-            return 1.0 # Correctly identified no action items
+            return _clamp_open01(1.0) # Correctly identified no action items
             
         if not gt_actions and pred_actions:
-            return 0.0 # Hallucinated action items
+            return _clamp_open01(0.0) # Hallucinated action items
             
         if not pred_actions and gt_actions:
-            return 0.0 # Missed action items
+            return _clamp_open01(0.0) # Missed action items
             
         def normalize(text):
             return set(re.findall(r'\b\w+\b', str(text).lower()))
@@ -75,7 +91,7 @@ class TriageGraders:
         precision_penalty = max(0, (len(pred_actions) - len(gt_actions)) * 0.1)
         
         final_score = (total_score / len(gt_actions)) - precision_penalty
-        return min(max(final_score, 0.0), 1.0)
+        return _clamp_open01(min(max(final_score, 0.0), 1.0))
         
     @staticmethod
     def grade_respond(predicted_responseText: str, ground_truth: Dict[str, Any]) -> float:
@@ -86,7 +102,7 @@ class TriageGraders:
         """
         text = str(predicted_responseText).strip()
         if not text:
-            return 0.0
+            return _clamp_open01(0.0)
             
         score = 0.0
         
@@ -115,4 +131,4 @@ class TriageGraders:
             keyword_score = sum(1 for kw in keywords if kw.lower() in lower_text) / len(keywords)
             score += (keyword_score * 0.6)
             
-        return min(max(score, 0.0), 1.0)
+        return _clamp_open01(min(max(score, 0.0), 1.0))
