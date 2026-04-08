@@ -57,6 +57,17 @@ def _single_line(val: Any, max_len: Optional[int] = None) -> str:
         s = s[: max_len - 3] + "..."
     return s
 
+def _clamp_open01(x: float, eps: float = 1e-3) -> float:
+    try:
+        x = float(x)
+    except Exception:
+        x = 0.0
+    if x <= 0.0:
+        return eps
+    if x >= 1.0:
+        return 1.0 - eps
+    return x
+
 
 # ---------------------------------------------------------------------------
 # Mandatory structured logging functions
@@ -99,7 +110,7 @@ def log_end(
 def _emit_failure_episode(task_name: str, reason: str) -> None:
     log_start(task=task_name, env=BENCHMARK, model=MODEL_NAME)
     _eprint(f"[ERROR] task={task_name} {reason}")
-    log_end(success=False, steps=0, score=0.0, rewards=[])
+    log_end(success=False, steps=0, score=_clamp_open01(0.0), rewards=[])
 
 
 # ---------------------------------------------------------------------------
@@ -257,7 +268,7 @@ def run_task_http(task_name: str, client: OpenAI) -> None:
                 break
 
         # Clamp cumulative score to [0.0, 1.0]
-        cumulative_score = min(max(cumulative_score, 0.0), 1.0)
+        cumulative_score = _clamp_open01(min(max(cumulative_score, 0.0), 1.0))
         success = cumulative_score >= SUCCESS_SCORE_THRESHOLD
 
     except requests.exceptions.ConnectionError:
@@ -321,7 +332,7 @@ async def run_task_docker(task_name: str, client: OpenAI, env: Any) -> None:
             if done:
                 break
 
-        cumulative_score = min(max(cumulative_score, 0.0), 1.0)
+        cumulative_score = _clamp_open01(min(max(cumulative_score, 0.0), 1.0))
         success = cumulative_score >= SUCCESS_SCORE_THRESHOLD
 
     except Exception as exc:
