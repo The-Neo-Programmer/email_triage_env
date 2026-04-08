@@ -1,20 +1,13 @@
----
-title: Email Triage Env
-emoji: 📧
-colorFrom: blue
-colorTo: indigo
-sdk: docker
-app_port: 7860
-tags:
-  - openenv
-  - rl
-  - email
-  - nlp
-  - real-world
-  - agent-benchmark
-pinned: false
-license: mit
----
+## Project metadata
+
+- **Title**: Email Triage Env
+- **Emoji**: 📧
+- **Theme**: blue → indigo
+- **SDK**: docker
+- **App port**: 7860
+- **Tags**: openenv, rl, email, nlp, real-world, agent-benchmark
+- **Pinned**: false
+- **License**: MIT
 
 # Email Triage OpenEnv Environment
 
