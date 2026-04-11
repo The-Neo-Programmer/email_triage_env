@@ -187,7 +187,10 @@ class EmailTriageEnvironment(Environment):
                 feedback = f"Response score: {score:.2f}."
 
         except json.JSONDecodeError as exc:
-            feedback = f"Invalid JSON format — could not parse action: {exc}"
+            if len(content) > 2000:
+                feedback = "Invalid format: Payload length exceeded limit. Please provide a concise JSON response."
+            else:
+                feedback = f"Invalid JSON format — could not parse action: {exc}"
             score = 0.0
         except KeyError as exc:
             feedback = f"Missing required key in email data: {exc}"
