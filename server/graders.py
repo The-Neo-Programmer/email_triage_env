@@ -97,8 +97,7 @@ class TriageGraders:
     def grade_respond(predicted_responseText: str, ground_truth: Dict[str, Any]) -> float:
         """
         Grades Task 3 (Respond).
-        Hybrid grading: logic based on word counts and keywords.
-        In a real scenario, this could invoke an LLM. Here we simulate the LLM aspect through programmatic checks.
+        Hybrid grading: 40% programmatic, 60% LLM based on professionalism, coverage, and policy compliance.
         """
         text = str(predicted_responseText).strip()
         if not text:
@@ -106,6 +105,7 @@ class TriageGraders:
             
         score = 0.0
         
+        # --- 40% Programmatic ---
         # Word count check (between 5 and 250 words)
         words = text.split()
         if 5 <= len(words) <= 250:
@@ -121,14 +121,75 @@ class TriageGraders:
         if has_signoff:
             score += 0.1
             
-        # Keyword matching (gives up to 0.6)
-        keywords = ground_truth.get("ideal_response_keywords", [])
-        if not keywords:
-            # If no keywords expected (e.g. spam), agent should decline or give short response
-            if len(words) < 20: 
-                score += 0.6
-        else:
-            keyword_score = sum(1 for kw in keywords if kw.lower() in lower_text) / len(keywords)
-            score += (keyword_score * 0.6)
+        # --- 60% LLM Component ---
+        llm_score = 0.0
+        try:
+            import os
+            from openai import OpenAI
+            import json
+            
+            hf_token = os.getenv("HF_TOKEN") or os.getenv("API_KEY")
+            if hf_token:
+                client = OpenAI(
+                    base_url="https://router.huggingface.co/v1",
+                    api_key=hf_token
+                )
+                
+                system_prompt = (
+                    "You are an expert AI evaluator assessing an email response drafted by an agent. "
+                    "You must output only a JSON object containing three integer scores between 0 and 5:\n"
+                    "1. professionalism: Tone and appropriateness.\n"
+                    "2. coverage: Did it address the required keywords and action items?\n"
+                    "3. compliance: Does it follow internal policy (e.g. not processing fraudulent wire transfers)?\n"
+                    "Format: {\"professionalism\": 5, \"coverage\": 5, \"compliance\": 5}"
+                )
+                
+                expected_keywords = ground_truth.get("ideal_response_keywords", [])
+                user_prompt = f"Expected keywords/topics: {expected_keywords}\n\nDrafted Email:\n{text}\n\nEvaluate the email and return the JSON."
+                
+                completion = client.chat.completions.create(
+                    model="Qwen/Qwen2.5-72B-Instruct",
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    temperature=0.0,
+                    max_tokens=100
+                )
+                
+                content = completion.choices[0].message.content.strip()
+                if "```json" in content:
+                    content = content.split("```json")[1].split("```")[0].strip()
+                elif "```" in content:
+                    content = content.replace("```", "").strip()
+                    
+                result = json.loads(content)
+                p = int(result.get("professionalism", 0))
+                cov = int(result.get("coverage", 0))
+                comp = int(result.get("compliance", 0))
+                
+                # Max sum is 15. Map 15 to 0.6
+                total_llm = p + cov + comp
+                llm_score = (total_llm / 15.0) * 0.6
+            else:
+                # Fallback to the old keyword matching if no API key is provided
+                keywords = ground_truth.get("ideal_response_keywords", [])
+                if not keywords:
+                    if len(words) < 20: 
+                        llm_score += 0.6
+                else:
+                    keyword_score = sum(1 for kw in keywords if kw.lower() in lower_text) / len(keywords)
+                    llm_score += (keyword_score * 0.6)
+        except Exception as e:
+            # Fallback on error
+            keywords = ground_truth.get("ideal_response_keywords", [])
+            if not keywords:
+                if len(words) < 20: 
+                    llm_score += 0.6
+            else:
+                keyword_score = sum(1 for kw in keywords if kw.lower() in lower_text) / len(keywords)
+                llm_score += (keyword_score * 0.6)
+                
+        score += llm_score
             
         return _clamp_open01(min(max(score, 0.0), 1.0))

@@ -38,7 +38,7 @@ This environment implements the full OpenEnv specification: typed Pydantic model
 
 **Why this domain:** Email triage is a genuine, high-value task that every professional performs. Training agents to classify, extract action items from, and respond to emails has direct commercial value — and evaluating whether an LLM can do this reliably is a meaningful benchmark. Unlike toy games, this environment measures a skill that matters.
 
-**Dataset:** 10 diverse synthetic emails spanning critical incidents, vendor requests, collaboration proposals, compliance reminders, and spam.
+**Dataset:** 25 diverse synthetic emails spanning critical incidents, vendor requests, collaboration proposals, compliance reminders, and spam.
 
 ---
 
@@ -118,10 +118,9 @@ The agent drafts a professional email reply as a plain-text string.
 **Expected action format:** Plain text email response (no JSON, no markdown).
 
 **Grading logic:**
-- Word count between 5 and 250 words: +0.2
-- Presence of greeting in first 50 characters: +0.1
-- Presence of sign-off in last 100 characters: +0.1
-- Keyword coverage score (up to +0.6): fraction of required semantic keywords present
+- Word count and Greeting/Sign-off checks (up to +0.4)
+- **High-fidelity LLM Judge** (up to +0.6): Evaluates response for professionalism, coverage of action items, and internal policy compliance using `Qwen/Qwen2.5-72B-Instruct` via HF Router.
+- Ensures a true test of generation quality beyond simple keyword matching.
 
 ---
 
@@ -160,7 +159,7 @@ email_triage_env/
 │   └── workflows/
 │       └── deploy-hf-space.yml             GitHub Action: validate, smoke-test, deploy
 ├── data/
-│   └── emails.json                         10 synthetic enterprise emails with ground truth
+│   └── emails.json                         25 synthetic enterprise emails with ground truth
 └── server/
     ├── __init__.py
     ├── app.py                              FastAPI application entry point with web UI

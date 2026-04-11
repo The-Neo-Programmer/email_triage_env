@@ -1,224 +1,7 @@
-[
-    {
-        "id": "email_001",
-        "sender": "alerts@system.internal",
-        "recipient": "devops-oncall@company.com",
-        "subject": "CRITICAL: Database connection timeout in US-East region",
-        "body": "Multiple microservices are reporting database connection timeouts in the US-East region. The latency spiked at 03:00 UTC and remains elevated. Customer logins are currently impacted. Immediate investigation required.",
-        "timestamp": "2026-04-05T03:05:00Z",
-        "ground_truth": {
-            "urgency": "critical",
-            "category": "incident",
-            "action_items": [
-                "Investigate database connection timeouts in US-East region",
-                "Resolve elevated latency issue",
-                "Restore customer login functionality"
-            ],
-            "ideal_response_keywords": [
-                "investigating",
-                "database",
-                "latency",
-                "restore",
-                "timeline",
-                "escalate"
-            ]
-        }
-    },
-    {
-        "id": "email_002",
-        "sender": "marketing-newsletter@external.com",
-        "recipient": "employee@company.com",
-        "subject": "Weekly Update: 10 Tips for Better ROI",
-        "body": "Hi there! Welcome to our weekly newsletter. This week we are focusing on how to maximize your marketing ROI with these 10 simple tips. Click the link to read more on our blog.",
-        "timestamp": "2026-04-05T09:00:00Z",
-        "ground_truth": {
-            "urgency": "low",
-            "category": "spam",
-            "action_items": [],
-            "ideal_response_keywords": []
-        }
-    },
-    {
-        "id": "email_003",
-        "sender": "j.smith@client-partner.com",
-        "recipient": "account-manager@company.com",
-        "subject": "Contract Renewal and Q3 Discussion",
-        "body": "Hi Team, our current contract is expiring at the end of next month. We would like to schedule a call sometime next week to discuss the renewal terms and our goals for Q3. Can you send over some availability?",
-        "timestamp": "2026-04-06T14:30:00Z",
-        "ground_truth": {
-            "urgency": "medium",
-            "category": "request",
-            "action_items": [
-                "Schedule a call with J. Smith for contract renewal discussion",
-                "Send availability for next week"
-            ],
-            "ideal_response_keywords": [
-                "availability",
-                "schedule",
-                "renewal",
-                "Q3",
-                "confirm"
-            ]
-        }
-    },
-    {
-        "id": "email_004",
-        "sender": "hr-automated@company.com",
-        "recipient": "all-employees@company.com",
-        "subject": "Action Required: Complete Annual Compliance Training",
-        "body": "This is an automated reminder that the Annual Compliance Training module is due by this Friday. Please log into the HR portal to complete the 30-minute course. Failure to comply may result in access restrictions.",
-        "timestamp": "2026-04-06T08:00:00Z",
-        "ground_truth": {
-            "urgency": "high",
-            "category": "info",
-            "action_items": [
-                "Complete Annual Compliance Training module in HR portal by Friday"
-            ],
-            "ideal_response_keywords": [
-                "compliance",
-                "training",
-                "complete",
-                "portal",
-                "Friday"
-            ]
-        }
-    },
-    {
-        "id": "email_005",
-        "sender": "sarah.connor@vendor.com",
-        "recipient": "procurement@company.com",
-        "subject": "Invoice 4992 - Past Due",
-        "body": "Hello, we are writing to inform you that Invoice 4992 for the software licensing fees is now 15 days past due. Please process this payment immediately to avoid service interruption. The invoice is attached.",
-        "timestamp": "2026-04-04T11:15:00Z",
-        "ground_truth": {
-            "urgency": "high",
-            "category": "incident",
-            "action_items": [
-                "Process payment for Invoice 4992 immediately",
-                "Confirm payment to vendor to avoid service interruption"
-            ],
-            "ideal_response_keywords": [
-                "payment",
-                "invoice",
-                "process",
-                "apologize",
-                "confirmation"
-            ]
-        }
-    },
-    {
-        "id": "email_006",
-        "sender": "partner-dev@techcorp.io",
-        "recipient": "engineering@company.com",
-        "subject": "Proposal: Joint API Integration for Q2 Launch",
-        "body": "Hi Engineering Team, as discussed in our last sync, we would like to propose a joint API integration effort for the Q2 product launch. We are thinking of a shared authentication layer and a webhook-based event system. Could we set up a technical scoping session this week? We can bring our lead architect.",
-        "timestamp": "2026-04-06T10:00:00Z",
-        "ground_truth": {
-            "urgency": "medium",
-            "category": "collaboration",
-            "action_items": [
-                "Schedule a technical scoping session with TechCorp this week",
-                "Prepare agenda for API integration discussion",
-                "Confirm availability of lead engineers for the session"
-            ],
-            "ideal_response_keywords": [
-                "session",
-                "scoping",
-                "integration",
-                "API",
-                "architecture",
-                "Q2"
-            ]
-        }
-    },
-    {
-        "id": "email_007",
-        "sender": "security-alerts@company-internal.com",
-        "recipient": "it-security@company.com",
-        "subject": "ALERT: Suspected Phishing Campaign Targeting Employees",
-        "body": "Our email gateway has flagged a coordinated phishing campaign impersonating our HR department. 47 employees have already clicked the malicious link in the last 2 hours. Immediate containment and remediation is required. Affected accounts should be suspended pending password resets.",
-        "timestamp": "2026-04-06T16:45:00Z",
-        "ground_truth": {
-            "urgency": "critical",
-            "category": "incident",
-            "action_items": [
-                "Suspend all 47 affected employee accounts immediately",
-                "Force password resets for compromised accounts",
-                "Block the malicious phishing link in the email gateway",
-                "Send all-company security alert about the phishing campaign"
-            ],
-            "ideal_response_keywords": [
-                "suspend",
-                "reset",
-                "block",
-                "phishing",
-                "containment",
-                "investigate",
-                "notify"
-            ]
-        }
-    },
-    {
-        "id": "email_008",
-        "sender": "product-updates@saas-platform.com",
-        "recipient": "ops-team@company.com",
-        "subject": "Release Notes: Version 4.2.1 is now available",
-        "body": "We are pleased to announce the release of version 4.2.1 of the SaaS Platform. This release includes performance improvements, bug fixes, and two new dashboard widgets. Full release notes are available on our documentation portal. No action is required unless you wish to upgrade early.",
-        "timestamp": "2026-04-05T12:00:00Z",
-        "ground_truth": {
-            "urgency": "low",
-            "category": "info",
-            "action_items": [],
-            "ideal_response_keywords": []
-        }
-    },
-    {
-        "id": "email_009",
-        "sender": "m.chen@company.com",
-        "recipient": "it-helpdesk@company.com",
-        "subject": "Cannot Access VPN - Working from Home Today",
-        "body": "Hi IT, I am unable to connect to the company VPN since this morning. I have tried restarting the VPN client and my laptop but the issue persists. I get an 'Authentication failed' error. I have an important client presentation at 2pm today and urgently need this resolved. My employee ID is MC-4892.",
-        "timestamp": "2026-04-06T09:30:00Z",
-        "ground_truth": {
-            "urgency": "high",
-            "category": "request",
-            "action_items": [
-                "Resolve VPN authentication issue for employee MC-4892",
-                "Prioritize fix before the 2pm client presentation"
-            ],
-            "ideal_response_keywords": [
-                "VPN",
-                "authentication",
-                "fix",
-                "prioritize",
-                "2pm",
-                "resolve",
-                "engineer"
-            ]
-        }
-    },
-    {
-        "id": "email_010",
-        "sender": "events@company.com",
-        "recipient": "all-employees@company.com",
-        "subject": "Team Offsite: Brainstorming Session Next Friday",
-        "body": "Hello everyone, we are organizing a half-day team brainstorming and strategy offsite next Friday at the downtown conference center. Lunch will be provided. Please RSVP to this email by Wednesday so we can confirm catering numbers. Optional 1-hour social event to follow.",
-        "timestamp": "2026-04-06T11:00:00Z",
-        "ground_truth": {
-            "urgency": "low",
-            "category": "collaboration",
-            "action_items": [
-                "RSVP for the team offsite by Wednesday"
-            ],
-            "ideal_response_keywords": [
-                "RSVP",
-                "attend",
-                "Friday",
-                "confirm",
-                "offsite"
-            ]
-        }
-    },
+import json
+import os
+
+new_emails = [
     {
         "id": "email_011",
         "sender": "angry.customer@external.com",
@@ -235,12 +18,7 @@
                 "Escalate the issue to the engineering and account management teams"
             ],
             "ideal_response_keywords": [
-                "apologize",
-                "escalating",
-                "fix",
-                "payment",
-                "call",
-                "urgent"
+                "apologize", "escalating", "fix", "payment", "call", "urgent"
             ]
         }
     },
@@ -258,10 +36,7 @@
                 "Attend the quarterly all-hands meeting next Thursday at 10 AM"
             ],
             "ideal_response_keywords": [
-                "attend",
-                "roadmap",
-                "meeting",
-                "confirm"
+                "attend", "roadmap", "meeting", "confirm"
             ]
         }
     },
@@ -294,12 +69,7 @@
                 "Restart the authentication microservice"
             ],
             "ideal_response_keywords": [
-                "memory",
-                "limit",
-                "restart",
-                "auth",
-                "fix",
-                "microservice"
+                "memory", "limit", "restart", "auth", "fix", "microservice"
             ]
         }
     },
@@ -318,12 +88,7 @@
                 "Prepare technical feasibility document by Friday (Engineering)"
             ],
             "ideal_response_keywords": [
-                "wireframes",
-                "feasibility",
-                "Wednesday",
-                "Friday",
-                "design",
-                "PRD"
+                "wireframes", "feasibility", "Wednesday", "Friday", "design", "PRD"
             ]
         }
     },
@@ -370,11 +135,7 @@
                 "Update payment method with a valid credit card within 48 hours"
             ],
             "ideal_response_keywords": [
-                "billing",
-                "update",
-                "payment",
-                "card",
-                "failed"
+                "billing", "update", "payment", "card", "failed"
             ]
         }
     },
@@ -394,12 +155,7 @@
                 "Notify Client Success once onboarding setup is complete"
             ],
             "ideal_response_keywords": [
-                "provision",
-                "tenant",
-                "accounts",
-                "done",
-                "tomorrow",
-                "Acme"
+                "provision", "tenant", "accounts", "done", "tomorrow", "Acme"
             ]
         }
     },
@@ -418,11 +174,7 @@
                 "Leave comments on the asset files by Thursday"
             ],
             "ideal_response_keywords": [
-                "review",
-                "assets",
-                "Drive",
-                "Thursday",
-                "feedback"
+                "review", "assets", "Drive", "Thursday", "feedback"
             ]
         }
     },
@@ -441,12 +193,7 @@
                 "Block IP 192.168.45.12 to mitigate potential brute-force attack"
             ],
             "ideal_response_keywords": [
-                "investigate",
-                "block",
-                "IP",
-                "SSH",
-                "attack",
-                "db-master"
+                "investigate", "block", "IP", "SSH", "attack", "db-master"
             ]
         }
     },
@@ -465,11 +212,7 @@
                 "Advise on required changes to the website privacy policy by EOM"
             ],
             "ideal_response_keywords": [
-                "review",
-                "GDPR",
-                "policy",
-                "privacy",
-                "advise"
+                "review", "GDPR", "policy", "privacy", "advise"
             ]
         }
     },
@@ -501,11 +244,7 @@
                 "Migrate integrations from API v2 to API v3 before May 1"
             ],
             "ideal_response_keywords": [
-                "migrate",
-                "API",
-                "v3",
-                "deprecation",
-                "update"
+                "migrate", "API", "v3", "deprecation", "update"
             ]
         }
     },
@@ -524,12 +263,21 @@
                 "Do NOT process the requested wire transfer"
             ],
             "ideal_response_keywords": [
-                "phishing",
-                "fraud",
-                "security",
-                "report",
-                "wire"
+                "phishing", "fraud", "security", "report", "wire"
             ]
         }
     }
 ]
+
+import os
+
+dataset_path = r"c:\Users\Anura\Python\Hackathons\MPO X SST Hackathon [25-03-26]\email_triage_env\data\emails.json"
+with open(dataset_path, "r", encoding="utf-8") as f:
+    data = json.load(f)
+
+data.extend(new_emails)
+
+with open(dataset_path, "w", encoding="utf-8") as f:
+    json.dump(data, f, indent=4)
+
+print("Dataset expanded successfully.")
