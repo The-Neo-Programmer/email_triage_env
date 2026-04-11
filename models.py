@@ -59,6 +59,8 @@ class EmailTriageObservation(Observation):
     # --- Step feedback (populated after step()) ---
     feedback: str = ""
     last_score: float = 0.0
+    cumulative_reward: float = 0.0
+    best_score: float = 0.0
 
 
 # ---------------------------------------------------------------------------

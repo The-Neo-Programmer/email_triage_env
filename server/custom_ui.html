@@ -361,7 +361,8 @@
             LAST_OBS = obs;
 
             document.getElementById('ui-task').innerText = obs.task || 'Unknown';
-            document.getElementById('ui-score').innerText = (obs.last_score || 0).toFixed(2);
+            const scoreVal = obs.cumulative_reward !== undefined ? obs.cumulative_reward : (obs.last_score || 0);
+            document.getElementById('ui-score').innerText = scoreVal.toFixed(2);
             document.getElementById('ui-done').innerText = done ? 'True' : 'False';
 
             document.getElementById('instructions-view').innerText = obs.instructions || 'No instructions provided.';
@@ -418,6 +419,12 @@
             logEvent("Initializing environment sequence (reset)...", true);
             document.getElementById('loader-reset').style.display = 'block';
             document.getElementById('btn-reset').disabled = true;
+
+            // Clear stale UI headers and inputs
+            document.getElementById('ui-task').innerText = 'Starting...';
+            document.getElementById('ui-score').innerText = '0.00';
+            document.getElementById('ui-done').innerText = 'False';
+            document.getElementById('action-input').value = '';
 
             try {
                 const data = await safeFetch(`${API_BASE}/reset`, {

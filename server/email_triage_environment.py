@@ -254,6 +254,8 @@ class EmailTriageEnvironment(Environment):
             instructions=TASK_INSTRUCTIONS.get(self._state.task, ""),
             feedback=feedback,
             last_score=last_score,
+            cumulative_reward=self._state.cumulative_reward,
+            best_score=self._state.best_score,
             done=done,
             reward=reward,
         )
